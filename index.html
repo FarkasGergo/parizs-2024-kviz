@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Párizs 2024 – magyar olimpiai érmesek</title>
+<style>
+  *{box-sizing:border-box}
+  img{max-width:100%}
+  [hidden]{display:none!important}
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  /* Layout: single centred card — photo fills the free height, answers reveal in three stacked rules below. */
+  :root{
+    --bg:#eef1f3;
+    --panel:#ffffff;
+    --line:#d3dce1;
+    --ink:#131d24;
+    --muted:#5a6f7c;
+    --accent:#0d6d84;
+    --accent-soft:#d9ecf1;
+    --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+    --body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0d1519; --panel:#152128; --line:#283a44;
+      --ink:#e9f2f6; --muted:#8ea6b3; --accent:#5cc2dd; --accent-soft:#17323c;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0d1519; --panel:#152128; --line:#283a44;
+    --ink:#e9f2f6; --muted:#8ea6b3; --accent:#5cc2dd; --accent-soft:#17323c;
+    color-scheme: dark;
+  }
+
+  *{box-sizing:border-box}
+  html{height:100%}
+  body{
+    min-height:100%; margin:0; background:var(--bg); color:var(--ink);
+    font-family:var(--body); font-size:16px; line-height:1.45;
+    display:flex; flex-direction:column; align-items:center; gap:14px;
+    padding-inline:16px; padding-block:16px;
+  }
+
+  .bar{width:100%; max-width:880px; display:flex; align-items:baseline; justify-content:space-between; gap:12px}
+  h1{
+    font-family:var(--display); font-weight:700; font-size:1.05rem; margin:0;
+    letter-spacing:-0.01em; text-wrap:balance;
+  }
+  h1 span{color:var(--muted); font-weight:500}
+  .counter{color:var(--muted); font-size:.85rem; font-variant-numeric:tabular-nums; white-space:nowrap}
+
+  .card{
+    width:100%; max-width:880px; flex:1; min-height:0;
+    background:var(--panel); border:1px solid var(--line); border-radius:16px;
+    padding:18px; display:flex; flex-direction:column; gap:16px;
+    cursor:pointer;
+  }
+  .photoWrap{flex:1; min-height:200px; display:flex; align-items:center; justify-content:center}
+  .photoWrap img{max-height:100%; max-width:100%; border-radius:10px; display:block}
+
+  .reveal{display:flex; flex-direction:column; gap:14px; min-width:0}
+  .slot{
+    border-left:3px solid var(--line); padding-left:13px; min-width:0;
+    opacity:0; transform:translateY(5px);
+    transition:opacity .2s ease, transform .2s ease, border-color .2s ease;
+  }
+  .slot.on{opacity:1; transform:none; border-left-color:var(--accent)}
+  .slot .lab{
+    display:block; font-size:.7rem; font-weight:600; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--muted); margin-bottom:3px;
+  }
+  .name{font-family:var(--display); font-weight:700; font-size:1.6rem; line-height:1.15; letter-spacing:-0.015em}
+  .ev{margin-top:6px; line-height:1.4}
+  .ev:first-child{margin-top:0}
+  .ev .team{display:block; color:var(--muted); font-size:.87rem; line-height:1.35; margin-top:2px}
+
+  .ask{color:var(--muted); font-style:italic}
+
+  footer{width:100%; max-width:880px; display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap}
+  .hint{color:var(--muted); font-size:.85rem}
+  .btns{display:flex; gap:8px}
+  kbd{
+    font-family:var(--body); font-size:.78rem; color:var(--ink);
+    background:var(--accent-soft); border:1px solid var(--line);
+    border-radius:5px; padding:1px 6px;
+  }
+  button{
+    font:inherit; font-size:.88rem; font-weight:500; color:var(--ink);
+    background:var(--panel); border:1px solid var(--line);
+    border-radius:9px; padding:7px 14px; cursor:pointer;
+  }
+  button:hover{border-color:var(--accent); color:var(--accent)}
+  button.primary{background:var(--accent-soft); border-color:var(--accent); color:var(--accent)}
+  :focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+
+  @media (prefers-reduced-motion: reduce){ .slot{transition:none} }
+  @media (max-width:560px){
+    .name{font-size:1.3rem}
+    .ev{font-size:.95rem}
+    .hint{display:none}
+    footer{justify-content:stretch}
+    .btns{width:100%}
+    .btns button{flex:1}
+  }
+</style>
+</head>
+<body>
+<div class="bar">
+  <h1>Párizs 2024 <span>· magyar olimpiai érmesek</span></h1>
+  <span class="counter" id="counter"></span>
+</div>
+
+<main class="card" id="card">
+  <div class="photoWrap"><img id="photo" alt="Versenyző fotója"></div>
+  <div class="reveal">
+    <div class="slot" id="s1"><span class="lab">Versenyző</span><span class="name" id="vName"></span></div>
+    <div class="slot" id="s2"><span class="lab">Párizs, 2024</span><div id="v2024"></div></div>
+    <div class="slot" id="s3"><span class="lab">Tokió, 2021</span><div id="v2021"></div></div>
+  </div>
+</main>
+
+<footer>
+  <span class="hint"><kbd>szóköz</kbd> következő lépés · <kbd>←</kbd> vissza · <kbd>R</kbd> újrakeverés</span>
+  <div class="btns">
+    <button id="back" type="button">Vissza</button>
+    <button id="shuffle" type="button">Újrakeverés</button>
+    <button id="next" type="button" class="primary">Tovább</button>
+  </div>
+</footer>
+
+<script>
+const DATA = [
+  { n:"Gulyás Michelle", f:"Gulyas_Michelle.jpg",
+    p:[{e:"Öttusa, női egyéni — 1. hely, ARANYÉREM"}],
+    t:[{e:"Öttusa, női egyéni — 12. hely"}] },
+
+  { n:"Márton Viviana", f:"Marton_Viviana.jpg",
+    p:[{e:"Tékvondó, női váltósúly (67 kg) — 1. hely, ARANYÉREM"}],
+    t:[{e:"Nem indult — Párizs volt az első olimpiája"}] },
+
+  { n:"Kós Hubert", f:"Kos_Hubert.jpg",
+    p:[{e:"Úszás, férfi 200 m hát — 1. hely, ARANYÉREM"}],
+    t:[{e:"Úszás, 200 m vegyes — 20. hely az előfutamokban, nem jutott tovább"}] },
+
+  { n:"Milák Kristóf", f:"Milak_Kristof.jpg",
+    p:[{e:"Úszás, férfi 100 m pillangó — 1. hely, ARANYÉREM"},
+       {e:"Úszás, férfi 200 m pillangó — 2. hely, ezüstérem"}],
+    t:[{e:"200 m pillangó — 1. hely, ARANYÉREM"},
+       {e:"100 m pillangó — 2. hely, ezüstérem"},
+       {e:"4 × 100 m gyorsváltó — 5. hely"}] },
+
+  { n:"Rasovszky Kristóf", f:"Rasovszky_Kristof.jpg",
+    p:[{e:"Úszás, hosszútávúszás, férfi 10 km — 1. hely, ARANYÉREM"}],
+    t:[{e:"Hosszútávúszás, férfi 10 km — 2. hely, ezüstérem"}] },
+
+  { n:"Andrásfi Tibor", f:"Andrasfi_Tibor.jpg",
+    p:[{e:"Vívás, férfi párbajtőrcsapat — 1. hely, ARANYÉREM", team:"Csapattársak: Koch Máté, Nagy Dávid, Siklósi Gergely"}],
+    t:[{e:"Nem indult — Párizs volt az első olimpiája"}] },
+
+  { n:"Koch Máté", f:"Koch_Mate.jpg",
+    p:[{e:"Vívás, férfi párbajtőrcsapat — 1. hely, ARANYÉREM", team:"Csapattársak: Andrásfi Tibor, Nagy Dávid, Siklósi Gergely"}],
+    t:[{e:"Nem indult — Párizs volt az első olimpiája"}] },
+
+  { n:"Nagy Dávid", f:"Nagy_David.jpg",
+    p:[{e:"Vívás, férfi párbajtőrcsapat — 1. hely, ARANYÉREM", team:"Csapattársak: Andrásfi Tibor, Koch Máté, Siklósi Gergely"}],
+    t:[{e:"Nem indult — Párizs volt az első olimpiája"}] },
+
+  { n:"Siklósi Gergely", f:"Siklosi_Gergely.jpg",
+    p:[{e:"Vívás, férfi párbajtőrcsapat — 1. hely, ARANYÉREM", team:"Csapattársak: Andrásfi Tibor, Koch Máté, Nagy Dávid"}],
+    t:[{e:"Vívás, férfi párbajtőr egyéni — 2. hely, ezüstérem"}] },
+
+  { n:"Csipes Tamara", f:"Csipes_Tamara.jpg",
+    p:[{e:"Kajak-kenu, női kajak egyes (K-1) 500 m — 2. hely, EZÜSTÉREM"},
+       {e:"Kajak-kenu, női kajak kettes (K-2) 500 m — 2. hely, EZÜSTÉREM", team:"Párja: Gazsó Alida"},
+       {e:"Kajak-kenu, női kajak négyes (K-4) 500 m — 3. hely, bronzérem", team:"Csapattársak: Fojt Sára, Gazsó Alida, Pupp Noémi"}],
+    t:[{e:"Női kajak négyes 500 m — 1. hely, ARANYÉREM"},
+       {e:"Női kajak egyes 500 m — 2. hely, ezüstérem"},
+       {e:"Női kajak kettes 500 m — 4. hely"}] },
+
+  { n:"Gazsó Alida", f:"Gazso_Alida.jpg",
+    p:[{e:"Kajak-kenu, női kajak kettes (K-2) 500 m — 2. hely, EZÜSTÉREM", team:"Párja: Csipes Tamara"},
+       {e:"Kajak-kenu, női kajak négyes (K-4) 500 m — 3. hely, bronzérem", team:"Csapattársak: Csipes Tamara, Fojt Sára, Pupp Noémi"}],
+    t:[{e:"Nem indult — Párizs volt az első olimpiája"}] },
+
+  { n:"Halász Bence", f:"Halasz_Bence.jpg",
+    p:[{e:"Atlétika, férfi kalapácsvetés — 2. hely, EZÜSTÉREM"}],
+    t:[{e:"Kalapácsvetés — 14. hely a selejtezőben, nem jutott a döntőbe"}] },
+
+  { n:"Varga Ádám", f:"Varga_Adam.jpg",
+    p:[{e:"Kajak-kenu, férfi kajak egyes (K-1) 1000 m — 2. hely, EZÜSTÉREM"},
+       {e:"Kajak-kenu, férfi kajak kettes (K-2) 500 m — indult", team:"Párja: Kopasz Bálint"}],
+    t:[{e:"Férfi kajak egyes 1000 m — 2. hely, ezüstérem"}] },
+
+  { n:"Nádas Bence", f:"Nadas_Bence.jpg",
+    p:[{e:"Kajak-kenu, férfi kajak kettes (K-2) 500 m — 2. hely, EZÜSTÉREM", team:"Párja: Tótka Sándor"},
+       {e:"Kajak-kenu, férfi kajak négyes — 7. hely"}],
+    t:[{e:"Férfi kajak kettes 1000 m — 4. hely", team:"Párja: Kopasz Bálint"}] },
+
+  { n:"Tótka Sándor", f:"Totka_Sandor.jpg",
+    p:[{e:"Kajak-kenu, férfi kajak kettes (K-2) 500 m — 2. hely, EZÜSTÉREM", team:"Párja: Nádas Bence"},
+       {e:"Kajak-kenu, férfi kajak négyes — 7. hely"}],
+    t:[{e:"Férfi kajak egyes 200 m — 1. hely, ARANYÉREM"},
+       {e:"Rio 2016: férfi kajak kettes 200 m — 4. hely"}] },
+
+  { n:"Szilágyi Áron", f:"Szilagyi_Aron.jpg",
+    p:[{e:"Vívás, férfi kardcsapat — 2. hely, EZÜSTÉREM", team:"Csapattársak: Gémesi Csanád, Rabb Krisztián, Szatmári András"}],
+    t:[{e:"Kard egyéni — 1. hely, ARANYÉREM (2012, 2016, 2021: háromszoros olimpiai bajnok)"},
+       {e:"Férfi kardcsapat — 3. hely, bronzérem"}] },
+
+  { n:"Szatmári András", f:"Szatmari_Andras.jpg",
+    p:[{e:"Vívás, férfi kardcsapat — 2. hely, EZÜSTÉREM", team:"Csapattársak: Gémesi Csanád, Rabb Krisztián, Szilágyi Áron"}],
+    t:[{e:"Férfi kardcsapat — 3. hely, bronzérem"}] },
+
+  { n:"Gémesi Csanád", f:"Gemesi_Csanad.jpg",
+    p:[{e:"Vívás, férfi kardcsapat — 2. hely, EZÜSTÉREM", team:"Csapattársak: Rabb Krisztián, Szatmári András, Szilágyi Áron"}],
+    t:[{e:"Férfi kardcsapat — 3. hely, bronzérem"}] },
+
+  { n:"Rabb Krisztián", f:"Rabb_Krisztian.jpg",
+    p:[{e:"Vívás, férfi kardcsapat — 2. hely, EZÜSTÉREM", team:"Csapattársak: Gémesi Csanád, Szatmári András, Szilágyi Áron"}],
+    t:[{e:"Nem indult — Párizs volt az első olimpiája"}] },
+
+  { n:"Betlehem Dávid", f:"Betlehem_David.jpg",
+    p:[{e:"Úszás, nyílt vízi úszás 10 km — 3. hely, BRONZÉREM"},
+       {e:"Úszás, 1500 m gyors — 4. hely"}],
+    t:[{e:"Nem indult — Párizs volt az első olimpiája"}] },
+
+  { n:"Kopasz Bálint", f:"Kopasz_Balint.jpg",
+    p:[{e:"Kajak-kenu, férfi kajak egyes (K-1) 1000 m — 3. hely, BRONZÉREM"},
+       {e:"Kajak-kenu, férfi kajak kettes (K-2) 500 m — indult", team:"Párja: Varga Ádám"}],
+    t:[{e:"Férfi kajak egyes 1000 m — 1. hely, ARANYÉREM"},
+       {e:"Férfi kajak kettes 1000 m — 4. hely", team:"Párja: Nádas Bence"}] },
+
+  { n:"Major Veronika", f:"Major_Veronika.jpg",
+    p:[{e:"Sportlövészet, női sportpisztoly 25 m — 3. hely, BRONZÉREM"},
+       {e:"Sportlövészet, női légpisztoly 10 m — 8. hely"}],
+    t:[{e:"25 m sportpisztoly — 35. hely a selejtezőben"},
+       {e:"10 m légpisztoly — 34. hely a selejtezőben"}] },
+
+  { n:"Muhari Eszter", f:"Muhari_Eszter.jpg",
+    p:[{e:"Vívás, női párbajtőr egyéni — 3. hely, BRONZÉREM"}],
+    t:[{e:"Nem indult — Párizs volt az első olimpiája"}] },
+
+  { n:"Fojt Sára", f:"Fojt_Sara.jpg",
+    p:[{e:"Kajak-kenu, női kajak kettes (K-2) 500 m — 3. hely, BRONZÉREM", team:"Párja: Pupp Noémi"},
+       {e:"Kajak-kenu, női kajak négyes (K-4) 500 m — 3. hely, BRONZÉREM", team:"Csapattársak: Csipes Tamara, Gazsó Alida, Pupp Noémi"}],
+    t:[{e:"Nem indult — Párizs volt az első olimpiája"}] },
+
+  { n:"Pupp Noémi", f:"Pupp_Noemi.jpg",
+    p:[{e:"Kajak-kenu, női kajak kettes (K-2) 500 m — 3. hely, BRONZÉREM", team:"Párja: Fojt Sára"},
+       {e:"Kajak-kenu, női kajak négyes (K-4) 500 m — 3. hely, BRONZÉREM", team:"Csapattársak: Csipes Tamara, Fojt Sára, Gazsó Alida"}],
+    t:[{e:"Nem indult — Párizs volt az első olimpiája"}] },
+];
+const el = {
+  photo: document.getElementById('photo'),
+  name: document.getElementById('vName'),
+  p24: document.getElementById('v2024'),
+  p21: document.getElementById('v2021'),
+  slots: [document.getElementById('s1'), document.getElementById('s2'), document.getElementById('s3')],
+  counter: document.getElementById('counter'),
+};
+
+let order = [], idx = 0, step = 0;
+
+function esc(s){ return s.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+
+function lines(list){
+  return list.map(r =>
+    '<div class="ev">' + esc(r.e) +
+    (r.team ? '<span class="team">' + esc(r.team) + '</span>' : '') +
+    '</div>'
+  ).join('');
+}
+
+function shuffle(){
+  order = DATA.map((_, i) => i);
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  idx = 0; step = 0; render();
+}
+
+function render(){
+  const a = DATA[order[idx]];
+  el.photo.src = 'photos/' + a.f;
+  el.photo.alt = step >= 1 ? a.n : 'Ki ez a versenyző?';
+  el.name.textContent = a.n;
+  el.p24.innerHTML = lines(a.p);
+  el.p21.innerHTML = lines(a.t);
+  el.slots.forEach((s, i) => s.classList.toggle('on', step > i));
+  el.counter.textContent = (idx + 1) + ' / ' + order.length;
+}
+
+function next(){
+  if (step < 3) step++; else { idx = (idx + 1) % order.length; step = 0; }
+  render();
+}
+function back(){
+  if (step > 0) step--; else { idx = (idx - 1 + order.length) % order.length; step = 3; }
+  render();
+}
+
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'BUTTON' && e.code === 'Space') return;
+  if (e.code === 'Space' || e.key === 'ArrowRight') { e.preventDefault(); next(); }
+  else if (e.key === 'ArrowLeft') { e.preventDefault(); back(); }
+  else if (e.key === 'r' || e.key === 'R') { shuffle(); }
+});
+document.getElementById('card').addEventListener('click', next);
+document.getElementById('next').addEventListener('click', e => { e.stopPropagation(); next(); });
+document.getElementById('back').addEventListener('click', e => { e.stopPropagation(); back(); });
+document.getElementById('shuffle').addEventListener('click', e => { e.stopPropagation(); shuffle(); });
+
+shuffle();
+</script>
+</body>
+</html>
